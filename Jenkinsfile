@@ -60,6 +60,17 @@ pipeline {
         stage("Integrate Feature"){
             steps{
                 echo "Integrating..."
+                sh 'git --version'
+                sh 'git branch -a'
+                sh 'git checkout integration'
+                sh 'git pull'
+                // FIX ME
+                sh 'git merge --no-ff --no-edit remotes/origin/feature/1'
+
+                // Pushen
+                withCredentials([gitUsernamePassword(credentialsId: 'github_pat', gitToolName: 'Default')]) {
+                    sh 'git push origin integration'
+                }
             }
         }
     }

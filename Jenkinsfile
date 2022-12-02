@@ -8,7 +8,11 @@ pipeline {
 
     stages {
         stage("Build Feature"){
-
+            // Limit Branches
+            when {
+                branch 'feature/*'
+                beforeAgent true
+            }
             // Docker Agent
             agent {
               docker {
@@ -24,7 +28,11 @@ pipeline {
         }
 
         stage("Test Feature"){
-
+            // Limit Branches
+            when {
+                branch 'feature/*'
+                beforeAgent true
+            }
             // Docker Agent
             agent {
               docker {
@@ -62,6 +70,11 @@ pipeline {
         }
 
         stage("Integrate Feature"){
+            // Limit Branches
+            when {
+                branch 'feature/*'
+                beforeAgent true
+            }
             // Hier wieder agent any
             steps{
                 echo "Integrating..."

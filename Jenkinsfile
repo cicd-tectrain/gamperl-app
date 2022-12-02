@@ -35,6 +35,14 @@ pipeline {
                 sh 'ls -la build/test-results/test'
                 sh 'ls -la build/reports/tests'
             }
+
+            // Post-Build Actions
+            post {
+                always {
+                    // JUnit Results archivieren
+                    junit 'build/test-results/test/*.xml'
+                }
+            }
         }
 
         stage("Integrate Feature"){

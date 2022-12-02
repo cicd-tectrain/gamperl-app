@@ -182,6 +182,7 @@ pipeline {
                     type: 'jar'
                 ]],
                 credentialsId: 'nexus_credentials',
+                nexusVersion: 'nexus3'
                 groupId: '',
                 nexusUrl: 'nexus:8081/repository/maven-snapshots',
                 protocol: 'http',
@@ -215,6 +216,12 @@ pipeline {
                 sh 'docker push nexus:5000/app:latest'
 
                 sh 'docker container run -p 8090:8085 --name testing -d --rm app:latest'
+            }
+
+            post {
+                always {
+                    sh 'docker logout nexus:5000'
+                }
             }
         }
     }

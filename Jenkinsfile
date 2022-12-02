@@ -31,6 +31,9 @@ pipeline {
             steps{
                 echo "Testing..."
                 sh 'gradle test'
+                // JUNit XML Reports
+                sh 'ls -la build/test-results/test'
+                sh 'ls -la build/reports/tests'
             }
         }
 

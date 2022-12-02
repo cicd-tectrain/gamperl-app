@@ -180,14 +180,13 @@ pipeline {
                     classifier: '',
                     file: 'build/libs/app-0.0.1-SNAPSHOT.jar',
                     type: 'jar'
-                ],
+                ]],
                 credentialsId: 'nexus_credentials',
                 groupId: '',
                 nexusUrl: 'nexus:8081/repository/maven-snapshots',
                 protocol: 'http',
                 repository: '',
                 version: '0.0.1-SNAPSHOT'
-                ]
             }
         }
 

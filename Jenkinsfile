@@ -75,6 +75,7 @@ pipeline {
                 branch 'feature/*'
                 beforeAgent true
             }
+
             // Hier wieder agent any
             steps{
                 echo "Integrating..."

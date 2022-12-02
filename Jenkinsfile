@@ -196,9 +196,6 @@ pipeline {
                 beforeAgent true
             }
 
-            steps {
-                echo "Deployment..."
-            }
             // Docker image bauen und starten (und archivieren)
 
             // Env für Nexus Credentials

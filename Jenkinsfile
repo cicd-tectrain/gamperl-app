@@ -2,6 +2,10 @@ pipeline {
 
     agent any
 
+    environment {
+        INTEGRATION_BRANCH = 'integration'
+    }
+
     stages {
         stage("Build Feature"){
 
@@ -58,18 +62,19 @@ pipeline {
         }
 
         stage("Integrate Feature"){
+            // Hier wieder agent any
             steps{
                 echo "Integrating..."
                 sh 'git --version'
                 sh 'git branch -a'
-                sh 'git checkout integration'
-                sh 'git pull'
+                sh 'git checkout ${INTEGRATION_BRANCH}'
+                sh 'git pull --ff-only'
                 // FIX ME
-                sh 'git merge --no-ff --no-edit remotes/origin/feature/1'
+                sh 'git merge --no-ff --no-edit remotes/origin/${BRANCH_NAME}'
 
                 // Pushen
                 withCredentials([gitUsernamePassword(credentialsId: 'github_pat', gitToolName: 'Default')]) {
-                    sh 'git push origin integration'
+                    sh 'git push origin ${INTEGRATION_BRANCH}'
                 }
             }
         }

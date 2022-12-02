@@ -92,5 +92,129 @@ pipeline {
                 }
             }
         }
+
+        // ========================= INTEGRATION =========================
+        stage("Build Integration"){
+            // Limit Branches
+            when {
+                branch "${INTEGRATION_BRANCH}"
+                beforeAgent true
+            }
+            // Docker Agent
+            agent {
+              docker {
+                image 'gradle:7.5.1-jdk17-focal'
+              }
+            }
+
+            steps{
+                echo "Building..."
+                sh 'gradle clean build -x test'
+                sh 'ls -la build/libs'
+            }
+
+            // Stash if stage was successful
+            post {
+                success{
+                    stash name: 'integration_build', includes: 'build/'
+                }
+            }
+        }
+
+        stage("Test Integration"){
+            // Limit Branches
+            when {
+                branch "${INTEGRATION_BRANCH}"
+                beforeAgent true
+            }
+            // Docker Agent
+            agent {
+              docker {
+                image 'gradle:7.5.1-jdk17-focal'
+              }
+            }
+
+            steps{
+                echo "Testing..."
+                sh 'gradle test'
+                // JUNit XML Reports
+                sh 'ls -la build/test-results/test'
+                sh 'ls -la build/reports/tests'
+            }
+
+            // Post-Build Actions
+            post {
+                always {
+                    // JUnit Results archivieren
+                    junit 'build/test-results/test/*.xml'
+                }
+
+                success {
+                    publishHTML target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'Test-Report'
+                    ]
+                }
+            }
+        }
+
+        stage("Publish Artifacts") {
+             // Limit Branches
+             when {
+                 branch "${INTEGRATION_BRANCH}"
+                 beforeAgent true
+             }
+
+            steps {
+                // Unstash
+                unstash 'integration_build'
+
+                // Publish Artifact in Nexus
+                nexusArtifactUploader artifacts: [
+                [
+                    artifactId: at.tectrain.app,
+                    classifier: '',
+                    file: 'build/libs/app-0.0.1-SNAPSHOT.jar',
+                    type: 'jar'
+                ]],
+                credentialsId: 'nexus_credentials',
+                groupId: '',
+                nexusUrl: 'nexus:8081/repository/maven-snapshots',
+                protocol: 'http',
+                repository: '',
+                version: '0.0.1-SNAPSHOT'
+            }
+        }
+
+        stage('Deploy Integration branch') {
+            when {
+                branch "${INTEGRATION_BRANCH}"
+                beforeAgent true
+            }
+
+            steps {
+                echo "Deployment..."
+            }
+            // Docker image bauen und starten (und archivieren)
+
+            // Env für Nexus Credentials
+
+            // Image bauen -> Dockerfile
+            //sh 'docker build -t XXX .'
+            // Image taggen
+
+            //sh 'docker login nexus:8081'
+
+            // Image pushen
+
+        }
+
+
+
+
     }
 }

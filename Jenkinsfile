@@ -42,6 +42,18 @@ pipeline {
                     // JUnit Results archivieren
                     junit 'build/test-results/test/*.xml'
                 }
+
+                success {
+                    publishHTML target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'Test-Report'
+                    ]
+                }
+
             }
         }
 
